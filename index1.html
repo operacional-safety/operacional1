@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Evolução Operacional - Safety Park</title>
+    <style>
+        /* ---- CONFIGURAÇÕES GERAIS E CORES DA SAFETY PARK ---- */
+        :root {
+            --cor-vermelho: #d90429;
+            --cor-preto: #212529;
+            --cor-cinza-escuro: #495057;
+            --cor-cinza-claro: #f8f9fa;
+            --cor-branco: #ffffff;
+            --fonte-principal: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--fonte-principal);
+            background-color: #e9ecef;
+            color: var(--cor-preto);
+            margin: 0;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        /* ---- CABEÇALHO DA APRESENTAÇÃO ---- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--cor-vermelho);
+            padding-bottom: 20px;
+            flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
+        }
+
+        .header-titulo h1 {
+            font-size: 2.5rem;
+            color: var(--cor-preto);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        /* ---- BANNER DO SUBTÍTULO ---- */
+        .subtitulo-banner {
+            background-color: var(--cor-vermelho);
+            color: var(--cor-branco);
+            padding: 12px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ---- MENU DE NAVEGAÇÃO ---- */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap; /* Permite que os botões quebrem a linha */
+        }
+        .nav-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--cor-cinza-escuro);
+            background-color: var(--cor-branco);
+            color: var(--cor-cinza-escuro);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-button:hover {
+            background-color: var(--cor-cinza-escuro);
+            color: var(--cor-branco);
+        }
+        .nav-button.active {
+            background-color: var(--cor-vermelho);
+            color: var(--cor-branco);
+            border-color: var(--cor-vermelho);
+        }
+
+        /* ---- FRASE DE AÇÃO ---- */
+        .action-phrase {
+            background-color: var(--cor-cinza-escuro);
+            color: var(--cor-branco);
+            text-align: center;
+            padding: 5px;
+            font-style: italic;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+
+        /* ---- ÁREA DA LOGOMARCA EM TEXTO ---- */
+        .logo-text-wrapper {
+            background-color: var(--cor-cinza-escuro);
+            color: var(--cor-branco);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 200px;
+            font-family: 'Arial Black', Gadget, sans-serif;
+        }
+        .logo-line-1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+        .logo-line-2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        /* ---- ESTILO DOS CAMPOS EDITÁVEIS ---- */
+        [contenteditable="true"] {
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        [contenteditable="true"]:hover,
+        [contenteditable="true"]:focus {
+            background-color: #fffbe6;
+            box-shadow: 0 0 0 2px var(--cor-vermelho);
+            outline: none;
+        }
+
+        /* ---- ESTRUTURA PRINCIPAL ---- */
+        .page-content {
+            display: none; /* Páginas escondidas por padrão */
+        }
+        .page-content.visible {
+            display: block; /* Página ativa é mostrada */
+        }
+
+        /* ---- CARD HORIZONTAL DE REGIÃO ---- */
+        .card-regiao-horizontal {
+            background-color: var(--cor-branco);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-regiao-header {
+            background-color: var(--cor-cinza-escuro);
+            color: var(--cor-branco);
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #343a40;
+            flex-wrap: wrap;
+        }
+        
+        .card-regiao-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .supervisor-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        .icon {
+            font-size: 1.2em;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .icon:hover {
+            transform: scale(1.2);
+        }
+
+        .regiao-icon {
+            width: 48px;
+            height: 48px;
+            fill: var(--cor-branco);
+            opacity: 0.4;
+        }
+
+        .card-regiao-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        .bloco-setor {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            background-color: var(--cor-branco);
+        }
+        
+        .bloco-setor-header h3 {
+            font-size: 1.5rem;
+            color: var(--cor-vermelho);
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .responsavel-info {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--cor-cinza-escuro);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .responsavel-info strong {
+            font-weight: 700;
+        }
+        
+        .bloco-setor .supervisor-info {
+            margin-top: 0;
+            background-color: var(--cor-cinza-claro);
+            color: var(--cor-cinza-escuro);
+        }
+
+        .unidades-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px dashed #dee2e6;
+        }
+
+        .unidade-botao {
+            background-color: var(--cor-cinza-claro);
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            color: var(--cor-cinza-escuro);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* ---- MODAL (POP-UP) ---- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: var(--cor-branco);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .modal-close:hover {
+            color: var(--cor-preto);
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: var(--cor-vermelho);
+            font-size: 1.8rem;
+        }
+        .modal-content ul {
+            padding-left: 20px;
+        }
+        .modal-content li {
+            margin-bottom: 10px;
+        }
+        .modal-btn-close {
+            background-color: var(--cor-vermelho);
+            color: var(--cor-branco);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        .modal-btn-close:hover {
+            background-color: #a7031f; /* Vermelho mais escuro */
+        }
+
+        /* ---- MEDIA QUERIES PARA RESPONSIVIDADE ---- */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header-titulo h1 {
+                font-size: 2rem;
+            }
+
+            .subtitulo-banner, .bloco-setor-header h3 {
+                font-size: 1.2rem;
+            }
+
+            .card-regiao-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .card-regiao-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .card-regiao-body {
+                padding: 15px;
+            }
+
+            .bloco-setor {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .responsavel-info, .supervisor-info {
+                flex-wrap: wrap;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-titulo">
+            <h1>Projeto Evolução Operacional</h1>
+        </div>
+        <div class="logo-text-wrapper">
+            <div class="logo-line-1">SAFETY PARK</div>
+            <div class="logo-line-2">ESTACIONAMENTOS</div>
+        </div>
+    </header>
+
+    <div class="subtitulo-banner">
+        Mapa Detalhado de Setores e Unidades (Abrangência Operacional)
+    </div>
+
+    <div class="nav-menu" id="main-nav-menu">
+        <!-- Botões de navegação serão inseridos aqui -->
+    </div>
+    
+    <div class="action-phrase">
+        Clique no seu símbolo (🛡️ ou ⭐) para ver suas atribuições
+    </div>
+
+    <main id="apresentacao-container">
+        <!-- As páginas/regiões serão inseridas aqui -->
+    </main>
+
+    <!-- Estrutura do Modal -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close-btn">&times;</span>
+            <div id="modal-body">
+                <!-- Conteúdo será inserido via JavaScript -->
+            </div>
+            <button class="modal-btn-close">Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================================
+        // DADOS E TEXTOS
+        // ========================================================================
+        const dadosAgrupadosPorRegiao = [
+            {
+                id: "regiao-1",
+                nomeAba: "Niterói",
+                regiao: "Região 1 (Niterói)",
+                supervisor: "Alex dos Santos & Marcelo Maia",
+                setores: [
+                    { nome: "ALFA - Icaraí 01", encarregado: "Alexandre Ferreira", unidades: ["CENTRAL PRIME", "CRYSTAL MALL", "CENTER IV", "JOÃO PESSOA 1"] },
+                    { nome: "ALFA - Icaraí 02", encarregado: "Ilza Barreto - Aux. Felipe Neponuceno", unidades: ["BEIRA MAR", "ED. CHICAGO", "APOIO GERAL DO SETOR"] },
+                    { nome: "ALFA - Icaraí 03", encarregado: "Carlos Aranha", unidades: ["CENTRO CLÍNICO", "ALVARES DE AZEVEDO"] },
+                    { nome: "ALFA - Icaraí 04", encarregado: "Rodrigo Barbosa", unidades: ["CENTRAL PRIME", "STADIUM OFFICES", "HORTIFRUTI SANTA ROSA (APOIO)"] },
+                    { nome: "ALFA - Jardim Icaraí/São Francisco/Alameda", encarregado: "Sup de Manutenção Fábio Teniente", unidades: ["JOÃO PESSOA 2", "MARIO VIANA", "ARARIBOIA", "Todas operações"], role: 'manutencao' },
+                    { nome: "BRAVO - Centro 01", encarregado: "Jansem Magessi", unidades: ["CONCEIÇÃO 171", "SÃO PEDRO 176", "BARCAS SHOPPING"] },
+                    { nome: "BRAVO - Centro 02", encarregado: "Carlos Alberto", unidades: ["RINK OFFICES", "ANDRADE DE NEVES", "REZERVA CULTURAL", "APOIO AO GLOBAL OFFICES"] },
+                    { nome: "BRAVO - Centro 03", encarregado: "Aux. Mirele Godoy", unidades: ["GLOBAL OFFICES", "APOIO ANDRADES DE NEVES", "APOIO RINK OFFICES"] },
+                    { nome: "CHARLES - Pendotiba 01", encarregado: "Aux. Jorge Maylon", unidades: ["SHOPPING FUTURA", "APOIO OP HOSPITAL ITAIPU"] },
+                    { nome: "CHARLES - Oceânica 01", encarregado: "Sup Marcelo Maia - Enc. Leandro Velasco", unidades: ["HOSPITAL ITAIPU", "HORTIFRUTI OCEANICA", "APOIO SHOPPING FUTURA"] },
+                    { nome: "CHARLES - Oceânica 02", encarregado: "Heleonardo Alves", unidades: ["REDE ECONÔMIA", "APOIO BOULEVARD MARICA"] },
+                    { nome: "CHARLES - Oceânica 03", encarregado: "Michelle Santos", unidades: ["BOULEVARD MARICÁ", "MARICÁ 117", "APOIO REDE ECONÔMIA"] }
+                ]
+            },
+            {
+                id: "regiao-2",
+                nomeAba: "Rio de Janeiro",
+                regiao: "Região 2 (Rio de Janeiro)",
+                supervisor: "Alex dos Santos & Carlos Vinicius",
+                setores: [
+                    { nome: "ALFA - Centro 01", encarregado: "Thiago Barbosa", unidades: ["1 DE MARÇO", "APOIO BOKEL", "APOIO ACM LAPAX"] },
+                    { nome: "ALFA - Centro 02", encarregado: "João Constantino", unidades: ["Ed. Bokel", "ACM Lapa"] },
+                    { nome: "ALFA - Botafogo 01", encarregado: "Aux. Jorge Gomes", unidades: ["USU BOTAFOGO"] },
+                    { nome: "BRAVO - Zona Sul 01", encarregado: "Sup Carlos Vinicius - Aux. Marcio Andrades", unidades: ["COPACABANA M. CENTER", "HILÁRIO DE GOUVEIA", "MIAMI CENTER", "VISCONDE DO PIRAJÁ 152"] },
+                    { nome: "BRAVO - Zona Sul 02", encarregado: "Carlos Vinicius", unidades: ["HUMAITA 72", "ASA BOTAFOGO", "IGREJA SJB", "ABBR JARDIM BOTÂNICO"] },
+                    { nome: "BRAVO - Barra 01", encarregado: "Adriana Nazaré", unidades: ["ITAUNA SHOPPING", "BARRA MALL", "CENTRO C. AMERICAS", "APOIO UNIDADES HOSTIFRUTIS"] },
+                    { nome: "BRAVO - Jacarepaguá 03", encarregado: "Mauro Felipe", unidades: ["GLOBAL FREGUESIA", "APOIO HTF FREGUESIA"] },
+                    { nome: "BRAVO - Madureira 04", encarregado: "Sup Alex", unidades: ["MADUREIRA NEW CENTER"] },
+                    { nome: "CHARLES - Nova Iguaçu", encarregado: "Alan Nogueira", unidades: ["CSN DE FÁTIMA", "TOP COMMERCE"] }
+                ]
+            },
+            {
+                id: "regiao-3",
+                nomeAba: "Hortifruti RJ",
+                regiao: "Operações Hortifruti Natural da Terra - RJ",
+                supervisor: "Fabiano Santos",
+                setores: [
+                    { nome: "Setor de Niterói", encarregado: "Fabiano Santos", unidades: ["MARQUES DO PARANÁ", "SANTA ROSA", "OCEANICA"] },
+                    { nome: "Setor de Botafogo", encarregado: "José Erandir", unidades: ["FLAMENGO", "BOTAFOGO 1", "BOTAFOGO 2"] },
+                    { nome: "Setor Zona Sul 01", encarregado: "Aux Wesley Garcia", unidades: ["VISCONDE DO PIRAJA", "LEBLON 1", "LEBLON 2"] },
+                    { nome: "Setor: Tijuca/Ilha - 02", encarregado: "Fabiano Santos", unidades: ["URUGUAI", "MARACANA", "TIJUCA", "ILHA DO GOVERNADOR"] },
+                    { nome: "Setor: Jacarepaguá-03", encarregado: "Fabiano Santos", unidades: ["GRAJAU", "FREGUESIA"] },
+                    { nome: "Setor: Barra - 01", encarregado: "Fabiano Santos", unidades: ["BARRA BLEU", "RECREIO", "AMERICAS 2950", "AMERICAS 6471", "BARRA 390"] },
+                    { nome: "Setor: Minas/Campos", encarregado: "Fabiano Santos", unidades: ["JUIZ DE FORA (SEM PESSOAL)", "CAMPOS DOS GOITACAZES (SEM PESSOAL)"] }
+                ]
+            },
+            {
+                id: "regiao-4",
+                nomeAba: "Hortifruti SP",
+                regiao: "Operações Hortifruti Natural da Terra - SP",
+                supervisor: "Lucas Vasilenko & Anderson Burlan",
+                setores: [
+                    { nome: "São Paulo 01", encarregado: "Lucas Vasilenko", unidades: ["VIALA MADALENA", "VILA MARIANA", "PARAISO", "ROSA E SILVA", "JOÃO CACHOEIRA", "TELHA NORTE MARGINAL"] },
+                    { nome: "São Paulo 02", encarregado: "Lucas Vasilenko", unidades: ["VERBO DIVINO", "INTERLAGOS", "NHAMBIQUARAS", "SBC KENNEDY"] },
+                    { nome: "São Paulo 03", encarregado: "Lucas Vasilenko", unidades: ["BROOKLINS", "ARAPANES", "HORTIFRUTI SANTOS", "TELHA NORTE SANTOS"] }
+                ]
+            }
+        ];
+
+        const textoSupervisor = `
+            <h3>🛡️ Atribuições do Supervisor</h3>
+            <ul>
+                <li>Garantir a implementação e o cumprimento dos padrões operacionais da Safety Park em todos os setores sob sua responsabilidade.</li>
+                <li>Realizar visitas técnicas e auditorias periódicas nas unidades, avaliando a qualidade do serviço, a apresentação da equipe e a infraestrutura.</li>
+                <li>Liderar, treinar e desenvolver a equipe de encarregados, fornecendo feedback constante e orientando na resolução de problemas complexos.</li>
+                <li>Analisar relatórios gerenciais (financeiros e operacionais) para identificar oportunidades de melhoria, otimização de custos e aumento de receita.</li>
+                <li>Atuar como ponte entre a diretoria e a operação, comunicando metas, diretrizes e coletando feedbacks relevantes do campo.</li>
+                <li>Gerenciar conflitos, mediar a relação com clientes estratégicos e garantir a satisfação em sua regional.</li>
+            </ul>
+        `;
+
+        const textoEncarregado = `
+            <h3>⭐ Atribuições do Responsável (Encarregado)</h3>
+            <ul>
+                <li>Liderar a equipe da unidade no dia a dia, distribuindo tarefas, definindo escalas e garantindo a cobertura de todos os postos (caixa, manobrista, etc.).</li>
+                <li>Conduzir o Diálogo de Desenvolvimento de Serviço (DDS) diariamente, registrando ocorrências, repassando diretrizes e coletando sugestões.</li>
+                <li>Assegurar o cumprimento de todas as rotinas operacionais: abertura e fechamento de caixa, controle de pátio, manobras seguras e atendimento ao cliente.</li>
+                <li>Ser o primeiro ponto de contato para a resolução de problemas na unidade, como dúvidas de clientes, pequenas falhas em equipamentos e gestão de conflitos internos.</li>
+                <li>Zelar pela apresentação da unidade, incluindo a limpeza, a organização e o correto uso dos uniformes pela equipe.</li>
+                <li>Realizar o fechamento financeiro do turno ou do dia, garantindo a precisão dos valores e o correto depósito ou sangria.</li>
+            </ul>
+        `;
+        
+        const textoManutencao = `
+            <h3>🛡️ Atribuições do Supervisor Técnico (Manutenção)</h3>
+            <ul>
+                <li>Realizar vistorias técnicas programadas nas unidades automatizadas (sem alocação de pessoal).</li>
+                <li>Verificar o funcionamento de todos os equipamentos, como portões automáticos, controles remotos, cancelas e sistemas de iluminação.</li>
+                <li>Executar manutenções preventivas e corretivas de baixa complexidade para garantir a operacionalidade contínua das garagens.</li>
+                <li>Identificar e relatar a necessidade de intervenções maiores ou de serviços especializados, solicitando orçamentos quando necessário.</li>
+                <li>Servir como ponto de contato técnico para os clientes mensalistas dessas unidades em caso de problemas de acesso.</li>
+                <li><strong>Função Universal:</strong> Zelar e fazer zelar pela imagem e reputação da empresa, fiscalizando a apresentação das equipes (uniformes), a conservação dos equipamentos e a qualidade dos ambientes em todas as operações da companhia.</li>
+            </ul>
+        `;
+
+        // ========================================================================
+        // LÓGICA DE CRIAÇÃO DA PÁGINA E MODAL
+        // ========================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('apresentacao-container');
+            const navMenu = document.getElementById('main-nav-menu');
+            const modal = document.getElementById('info-modal');
+            const modalBody = document.getElementById('modal-body');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            const unidadesPorSetor = 6;
+
+            dadosAgrupadosPorRegiao.forEach(regiao => {
+                regiao.setores.forEach(setor => {
+                    const unidadesAtuais = setor.unidades.length;
+                    if (unidadesAtuais < unidadesPorSetor) {
+                        for (let i = 0; i < (unidadesPorSetor - unidadesAtuais); i++) {
+                            setor.unidades.push("Nova Unidade");
+                        }
+                    }
+                });
+            });
+
+            function criarUnidadeHtml(nome) {
+                return `<div class="unidade-botao" contenteditable="true">${nome}</div>`;
+            }
+
+            function criarSetorHtml(setor) {
+                const unidadesHtml = setor.unidades.map(criarUnidadeHtml).join('');
+                let responsavelHtml;
+
+                if (setor.role === 'manutencao') {
+                    responsavelHtml = `
+                        <div class="supervisor-info">
+                            <span class="icon icon-manutencao" title="Ver atribuições do Supervisor Técnico">🛡️</span>
+                            <span>Supervisor Técnico:</span>
+                            <span contenteditable="true">${setor.encarregado}</span>
+                            <span class="icon">⚙️</span>
+                            <span class="icon">⚙️</span>
+                            <span class="icon">⚙️</span>
+                        </div>`;
+                } else {
+                    responsavelHtml = `
+                        <p class="responsavel-info">
+                            <span class="icon icon-responsavel" title="Ver atribuições do Responsável">⭐</span>
+                            <strong>Responsável:</strong> 
+                            <span contenteditable="true">${setor.encarregado}</span>
+                            <span class="icon">⚙️</span>
+                        </p>`;
+                }
+
+                return `
+                    <div class="bloco-setor">
+                        <div class="bloco-setor-header">
+                            <div>
+                                <h3><span contenteditable="true">${setor.nome}</span></h3>
+                                ${responsavelHtml}
+                            </div>
+                        </div>
+                        <div class="unidades-wrapper">
+                            ${unidadesHtml}
+                        </div>
+                    </div>`;
+            }
+            
+            function criarRegiaoHtml(dataRegiao) {
+                const setoresHtml = dataRegiao.setores.map(criarSetorHtml).join('');
+                const pageWrapper = document.createElement('div');
+                pageWrapper.id = dataRegiao.id;
+                pageWrapper.className = 'page-content';
+
+                pageWrapper.innerHTML = `
+                    <div class="card-regiao-horizontal">
+                        <div class="card-regiao-header">
+                            <div>
+                                <h2><span contenteditable="true">${dataRegiao.regiao}</span></h2>
+                                <div class="supervisor-info">
+                                    <span class="icon icon-supervisor" title="Ver atribuições do Supervisor">🛡️</span>
+                                    <span>Supervisor:</span>
+                                    <span contenteditable="true">${dataRegiao.supervisor}</span>
+                                    <span class="icon">⚙️</span>
+                                    <span class="icon">⚙️</span>
+                                    <span class="icon">⚙️</span>
+                                </div>
+                            </div>
+                            <div>
+                                <svg class="regiao-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="card-regiao-body">
+                            ${setoresHtml}
+                        </div>
+                    </div>
+                `;
+                return pageWrapper;
+            }
+
+            // --- RENDERIZAÇÃO INICIAL ---
+            dadosAgrupadosPorRegiao.forEach((dataRegiao, index) => {
+                // Cria e adiciona o botão de navegação
+                const navButton = document.createElement('button');
+                navButton.className = 'nav-button';
+                navButton.textContent = dataRegiao.nomeAba;
+                navButton.dataset.target = dataRegiao.id;
+                navMenu.appendChild(navButton);
+
+                // Cria e adiciona a página da região
+                const regiaoNode = criarRegiaoHtml(dataRegiao);
+                container.appendChild(regiaoNode);
+
+                // Ativa o primeiro botão e a primeira página
+                if (index === 0) {
+                    navButton.classList.add('active');
+                    regiaoNode.classList.add('visible');
+                }
+            });
+            
+            // --- LÓGICA DA NAVEGAÇÃO ---
+            navMenu.addEventListener('click', function(e) {
+                if (e.target.matches('.nav-button')) {
+                    const targetId = e.target.dataset.target;
+                    
+                    // Atualiza botões
+                    navMenu.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Atualiza páginas
+                    container.querySelectorAll('.page-content').forEach(page => page.classList.remove('visible'));
+                    document.getElementById(targetId).classList.add('visible');
+                }
+            });
+
+            // Lógica do Modal
+            document.body.addEventListener('click', function(e) {
+                if (e.target.classList.contains('icon-supervisor')) {
+                    modalBody.innerHTML = textoSupervisor;
+                    modal.style.display = 'flex';
+                }
+                if (e.target.classList.contains('icon-responsavel')) {
+                    modalBody.innerHTML = textoEncarregado;
+                    modal.style.display = 'flex';
+                }
+                if (e.target.classList.contains('icon-manutencao')) {
+                    modalBody.innerHTML = textoManutencao;
+                    modal.style.display = 'flex';
+                }
+                if (e.target === modal || e.target === modalCloseBtn || e.target.classList.contains('modal-btn-close')) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
